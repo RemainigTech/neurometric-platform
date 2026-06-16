@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CogniSuite — Clinical Assessment Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2 family=Playfair+Display:ital,wght=0,700;0,900;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(to bottom, hsl(195, 35%, 88%) 0%, hsl(115, 45%, 90%) 40%, hsl(115, 42%, 82%) 100%);
+      --card-bg: rgba(255, 255, 255, 0.98);
+      --text-main: hsl(25, 40%, 20%);
+      --text-muted: hsl(115, 45%, 25%);
+      --teal-dark: hsl(120, 55%, 15%);
+      --accent-orange: hsl(28, 40%, 52%);
+      --accent-hover: hsl(42, 34%, 48%);
+      --border-color: rgba(93, 124, 99, 0.15);
+      --flash-green-bg: hsl(115, 42%, 92%);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    
+    body { 
+      background: var(--bg-gradient); 
+      min-height: 100vh; 
+      display: flex; 
+      flex-direction: column;
+      align-items: center; 
+      justify-content: flex-start;
+      padding: 120px 30px 40px 30px; 
+      color: var(--text-main); 
+    }
+
+    /* ==========================================================================
+       GLOBAL PERSISTENT NAVIGATION BAR
+       ========================================================================== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 2500;
+      background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-color); padding: 16px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .nav-brand { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--teal-dark); letter-spacing: 0.5px; }
+    .nav-brand span { color: var(--accent-orange); font-style: italic; }
+    .nav-links { display: flex; gap: 16px; align-items: center; }
+    .nav-link { padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; transition: all 0.2s; color: var(--text-muted); text-decoration: none; }
+    .nav-link.active { background: var(--teal-dark); color: white; }
+    .nav-link:hover:not(.active) { background: hsl(115, 42%, 95%); color: var(--teal-dark); }
+    
+    .dashboard-container { 
+      width: 100%; 
+      max-width: 950px; 
+      display: flex;
+      flex-direction: column;
+      gap: 25px; 
+    }
+
+    .card { 
+      background: var(--card-bg); 
+      border-radius: 24px; 
+      padding: 35px 40px; 
+      box-shadow: 0 16px 40px rgba(0,0,0,0.05); 
+      border: 1px solid var(--border-color); 
+    }
+    
+    .header-layout {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 40px;
+      margin-bottom: 25px;
+    }
+    .header-text { flex: 1; }
+    
+    h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--teal-dark); line-height: 1.15; margin-bottom: 12px; }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; }
+    
+    .control-panel {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 25px;
+    }
+    
+    .stats-row { display: flex; gap: 12px; min-width: 320px; }
+    .stat-box { flex: 1; background: hsl(115, 42%, 95%); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px; text-align: center; }
+    .stat-val { font-size: 1.4rem; font-weight: 700; color: var(--teal-dark); }
+    .stat-lbl { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-top: 2px; font-weight: 700; }
+    
+    .actions-row { display: flex; gap: 12px; flex: 1; width: 100%; }
+    .btn-primary { flex: 1.3; background: var(--accent-orange); color: white; border: none; padding: 14px; border-radius: 14px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; text-decoration: none; box-shadow: 0 4px 12px rgba(214,110,31,0.15); display: flex; align-items: center; justify-content: center; }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-secondary { flex: 1; background: white; color: var(--teal-dark); border: 1px solid var(--border-color); padding: 14px; border-radius: 14px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; }
+    .btn-secondary:hover { background: #f4fbf1; }
+
+    #report-gateway-card { display: none; width: 100%; border-left: 4px solid var(--accent-orange); background: var(--flash-green-bg); padding: 14px 20px; border-radius: 0 16px 16px 0; margin-bottom: 5px; }
+    .gateway-header { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 700; }
+    .gateway-link { font-size: 0.95rem; font-weight: 700; color: var(--teal-dark); text-decoration: none; display: inline-block; margin-top: 2px; }
+    .gateway-link:hover { text-decoration: underline; color: var(--accent-orange); }
+
+    .architecture-title { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--teal-dark); font-weight: 700; padding-left: 5px; }
+    .module-list { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+    
+    .module-item { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      padding: 14px 24px; 
+      background: white; 
+      border: 1px solid var(--border-color); 
+      border-radius: 16px; 
+      box-shadow: 0 2px 8px rgba(93, 124, 99, 0.04); 
+    }
+    .module-info { display: flex; align-items: center; gap: 16px; }
+    .module-num { width: 28px; height: 28px; background: var(--teal-dark); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; }
+    .module-name { font-weight: 600; font-size: 0.95rem; color: var(--text-main); white-space: nowrap; }
+    .module-domain { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; text-align: right; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+  <!-- Persistent Global Navigation Header Bar -->
+  <nav>
+    <div class="nav-brand">Cogni<span>Suite</span></div>
+    <div class="nav-links">
+      <a href="dashboard.html" class="nav-link active">Dashboard</a>
+      <a href="interpretation.html" class="nav-link">Interpretation</a>
+      <a href="reporting.html" class="nav-link">Visual Report</a>
+      <a href="recommendations.html" class="nav-link">Recommendations</a>
+    </div>
+  </nav>
+
+  <div class="dashboard-container">
+    <div class="card">
+      <div class="header-layout">
+        <div class="header-text">
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent-orange); font-weight:700; margin-bottom:8px;">Unified Diagnostic Panel</div>
+          <h1>CogniSuite Assessment Framework</h1>
+          <p class="subtitle">An advanced 7-module neurocognitive battery tracking spatial memory targets, visual processing intervals, executive function metrics, and selective attentional processing.</p>
+        </div>
+      </div>
+
+      <!-- Success Alert Banner Gateway -->
+      <div id="report-gateway-card">
+        <div class="gateway-header">✅ Evaluation Metrics Compiled Successfully</div>
+        <a href="reporting.html" class="gateway-link">Access Comprehensive Visual Analytics Profile →</a>
+      </div>
+
+      <!-- Main Action Controls Subpanel -->
+      <div class="control-panel">
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-val">7</div><div class="stat-lbl">Active Games</div></div>
+          <div class="stat-box"><div class="stat-val" id="totalScoreText">0</div><div class="stat-lbl">Points Logged</div></div>
+        </div>
+        <div class="actions-row">
+          <a href="GAME1.html" class="btn-primary" id="startBtn">Initiate Screen Battery</a>
+          <a href="recommendations.html" class="btn-secondary">View Pathways</a>
+          <button class="btn-secondary" style="max-width: 60px;" onclick="clearDiagnosticRecords()" title="Purge Local Database">🗑️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modular Grid Framework View -->
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div class="architecture-title">Module Grid Architecture</div>
+      <div class="module-list" id="moduleList"></div>
+    </div>
+  </div>
+
+  <script>
+    // Structural Architecture List Data
+    const structuralModules = [
+      {n:1, name:'Marigold Memory Recall', domain:'Working Memory / Spatial Span'},
+      {n:2, name:'Courtyard Memories', domain:'Episodic Encoding'},
+      {n:3, name:'Adaptive Patch Patrol', domain:'Selective Attention / Vigilance'},
+      {n:4, name:'Garden Trail', domain:'Executive Function / Set-Shifting'},
+      {n:5, name:'Courtyard Delayed Recall', domain:'Memory Consolidation'},
+      {n:6, name:'Clock Construction', domain:'Visuospatial Construction'},
+      {n:7, name:'Stroop Puzzles A & B', domain:'Inhibitory Control Profiles'}
+    ];
+
+    // Safely execute DOM injection first to guarantee visual layout elements render immediately
+    document.getElementById('moduleList').innerHTML = structuralModules.map(m => `
+      <div class="module-item">
+        <div class="module-info">
+          <div class="module-num">${m.n}</div>
+          <div class="module-name">${m.name}</div>
+        </div>
+        <div class="module-domain">${m.domain}</div>
+      </div>
+    `).join('');
+
+    /**
+     * Defensive Processing Unpacking Loop
+     * Guarantees total security against blank storage conditions or parse mismatches
+     */
+    function hydrateDashboardMetrics() {
+      try {
+        let activeSessionString = localStorage.getItem('emmaSession') || localStorage.getItem('dementiaAssessmentSession');
+        
+        if (!activeSessionString) {
+          console.log("Dashboard Status: Storage registers clear. Awaiting test bed generation.");
+          return;
+        }
+
+        const parsedData = JSON.parse(activeSessionString);
+        if (parsedData && parsedData.scores && Object.keys(parsedData.scores).length > 0) {
+          // Reveal the report redirection gateway link banner safely
+          document.getElementById('report-gateway-card').style.display = 'block';
+          document.getElementById('startBtn').textContent = 'Relaunch Assessment';
+          
+          // Match your precise backend testing keys
+          const assessmentKeys = ['game1','game2','game3','game4','game5','game6','game7','game7_stroop'];
+          let aggregateTotal = 0;
+          
+          assessmentKeys.forEach(k => {
+            if(parsedData.scores[k] !== undefined && parsedData.scores[k] !== null) {
+              aggregateTotal += Number(parsedData.scores[k]);
+            }
+          });
+          
+          document.getElementById('totalScoreText').textContent = aggregateTotal;
+        }
+      } catch(error) { 
+        console.warn("Defensive Parser Alert: Handled structural evaluation discrepancy smoothly ->", error); 
+      }
+    }
+
+    function clearDiagnosticRecords() {
+      if(confirm('Warning: Are you certain you want to erase all performance logs from this station?')) {
+        localStorage.clear();
+        location.reload();
+      }
+    }
+
+    // Initialize execution loop on mount lifecycle window hook safely
+    document.addEventListener('DOMContentLoaded', hydrateDashboardMetrics);
+  </script>
+</body>
+</html>
