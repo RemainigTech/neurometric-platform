@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CogniSuite — Data Orchestration, Longitudinal Analytics & Backend Sync Interface</title>
+  
+  <!-- Core Typography, UI Systems & Layout CDNs -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,700;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* ==========================================================================
+       CLINICAL GLOBAL CORE PATTERN SCHEMATICS (HSL MATRIX)
+       ========================================================================== */
+    :root {
+      --bg-canvas: hsl(115, 20%, 95%);
+      --card-bg: #ffffff;
+      --teal-dark: hsl(120, 55%, 15%);
+      --teal-light: hsl(115, 45%, 25%);
+      --text-main: hsl(25, 40%, 20%);
+      --text-muted: hsl(115, 35%, 35%);
+      --border-line: hsl(35, 35%, 85%);
+      --accent-orange: hsl(28, 40%, 52%);
+      --accent-hover: hsl(42, 34%, 48%);
+      --danger-crimson: hsl(0, 75%, 45%);
+      --success-green: hsl(140, 65%, 30%);
+      --info-blue: hsl(200, 70%, 40%);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-font-smoothing: antialiased; }
+    body { background-color: var(--bg-canvas); color: var(--text-main); min-height: 100vh; padding-top: 110px; }
+    .display-font { font-family: 'Playfair Display', serif; }
+    
+    .metric-card { 
+      background: var(--card-bg); 
+      border: 1px solid var(--border-line); 
+      border-radius: 24px; 
+      box-shadow: 0 10px 30px rgba(93, 124, 99, 0.05);
+    }
+
+    .nav-link { padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; transition: all 0.2s; color: var(--text-muted); text-decoration: none; }
+    .nav-link:hover { background: hsl(115, 42%, 92%); color: var(--teal-dark); }
+
+    input[type="number"], input[type="text"], input[type="date"], select {
+      background-color: hsl(35, 35%, 98%);
+      border: 1px solid var(--border-line);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text-main);
+      width: 100%;
+      transition: all 0.2s ease-in-out;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-orange);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(214, 110, 31, 0.1);
+    }
+
+    /* Live Data Logs Terminal Custom Polish */
+    .terminal-window {
+      background-color: hsl(220, 30%, 7%);
+      border: 1px solid hsl(220, 25%, 3%);
+      color: hsl(140, 80%, 65%);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-canvas); }
+    ::-webkit-scrollbar-thumb { background: var(--border-line); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <!-- Persistent Global Clinical Header Navigation Bar Controls -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-[var(--border-line)] py-4 px-8 flex justify-between items-center shadow-sm">
+    <div class="display-font text-2xl font-bold text-[var(--teal-dark)]">Cogni<span>Suite</span></div>
+    <div class="nav-links flex gap-4 items-center">
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
+      <a href="interpretation.html" class="nav-link">Interpretation</a>
+      <a href="reporting.html" class="nav-link">Visual Report</a>
+      <a href="recommendations.html" class="nav-link">Recommendations</a>
+    </div>
+  </nav>
+
+  <!-- Base Grid Platform Workspace Content Canvas Container -->
+  <main class="pb-20 px-4 sm:px-8 max-w-7xl mx-auto space-y-8">
+    
+    <!-- Workspace Diagnostic Dashboard Header Section Title Block -->
+    <header class="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 border-b border-[var(--border-line)] pb-6">
+      <div>
+        <div class="text-[var(--accent-orange)] font-bold tracking-[3px] uppercase text-xs mb-2">Backend Preparation & Schema Architecture Layer</div>
+        <h1 class="display-font text-4xl sm:text-5xl font-black text-[var(--teal-dark)]">Data Sync Orchestrator</h1>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <button onclick="simulateDailyProgressRun()" class="bg-white border border-[var(--border-line)] px-4 py-3 rounded-xl text-xs font-bold text-[var(--success-green)] hover:bg-emerald-50 transition-all shadow-sm">
+          📈 Simulate Daily Progress Run
+        </button>
+        <button onclick="simulateDeteriorationRun()" class="bg-white border border-[var(--border-line)] px-4 py-3 rounded-xl text-xs font-bold text-[var(--danger-crimson)] hover:bg-red-50 transition-all shadow-sm">
+          📉 Simulate Deterioration Cascade
+        </button>
+        <button onclick="clearLongitudinalDatabase()" class="bg-white border border-red-200 px-4 py-3 rounded-xl text-xs font-bold text-red-500 hover:bg-red-50 transition-all shadow-sm">
+          🗑️ Clear Longitudinal Logs
+        </button>
+      </div>
+    </header>
+
+    <!-- Environment Split Grid Configuration Columns Matrix -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- COLUMN 1: CLIENT ENTRIES, METRIC ENTRIES & LOGGING REGISTRIES FORMS (8 COLS) -->
+      <div class="col-span-12 lg:col-span-8 space-y-8">
+        
+        <!-- Segment A: Patient Intake Demographics Information Subsystem -->
+        <div class="metric-card p-6 sm:p-8 space-y-6">
+          <div class="border-b border-gray-100 pb-3 flex justify-between items-center">
+            <div>
+              <h3 class="display-font text-xl font-bold text-[var(--teal-dark)] mb-1">Patient Demographic Intake Portal</h3>
+              <p class="text-xs text-[var(--text-muted)]">Input parameters matching the backend user record payload schemas seamlessly.</p>
+            </div>
+            <span class="bg-blue-50 text-[var(--info-blue)] text-[10px] font-mono font-bold px-3 py-1 rounded-full border border-blue-100 uppercase tracking-wider">User Login Context</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Patient Alphanumeric ID</label>
+              <input type="text" id="patient_uuid" value="PT-90432" class="font-mono font-bold text-slate-800">
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Full Name</label>
+              <input type="text" id="patient_name" value="Anonymous Subject" class="font-semibold text-slate-800">
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Assessment Target Date</label>
+              <input type="date" id="assessment_timestamp" class="font-semibold text-slate-800">
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Age Indicator</label>
+              <input type="number" id="patient_age" value="72" class="font-semibold text-slate-800">
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Clinical Cohort Assignment Identification</label>
+              <select id="clinical_cohort_id" class="font-semibold text-slate-800">
+                <option value="MCI-ALPHA">Mild Cognitive Impairment (MCI-Alpha)</option>
+                <option value="SMC-OBSERVATION">Subjective Memory Complaints (SMC)</option>
+                <option value="CONTROL-HEALTHY">Healthy Baseline Control Variant Group</option>
+              </select>
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Assigned Supervising Clinician</label>
+              <input type="text" id="doctor_signoff_id" value="DR-RAMAN-2026" class="font-mono text-slate-700">
+            </div>
+          </div>
+        </div>
+
+        <!-- Segment B: Longitudinal Granular Score Tracker Configuration Ledger -->
+        <div class="metric-card p-6 sm:p-8 space-y-6">
+          <div class="border-b border-gray-100 pb-3 flex justify-between items-center">
+            <div>
+              <h3 class="display-font text-xl font-bold text-[var(--teal-dark)] mb-1">Daily Gameplay Session Analytics Form</h3>
+              <p class="text-xs text-[var(--text-muted)]">Captures execution indices mapping directly to your 7 automated active testing keys.</p>
+            </div>
+            <span class="bg-amber-50 text-[var(--accent-orange)] text-[10px] font-mono font-bold px-3 py-1 rounded-full border border-amber-100 uppercase tracking-wider">Session Variables</span>
+          </div>
+
+          <div class="overflow-x-auto border border-[var(--border-line)] rounded-xl bg-white">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr class="bg-slate-50 border-b border-[var(--border-line)] text-[var(--teal-light)] font-bold text-xs select-none">
+                  <th class="p-4">Target Core Evaluation Module Element</th>
+                  <th class="p-4">Registry Identifier Reference</th>
+                  <th class="p-4 text-center w-24">Hits (Score)</th>
+                  <th class="p-4 text-center w-24">Fault Lapses</th>
+                  <th class="p-4 text-center w-28">Latency (s)</th>
+                </tr>
+              </thead>
+              <tbody id="scoringFormTableBody" class="divide-y divide-[var(--border-line)] font-medium text-slate-700 text-xs">
+                <!-- Programmatic compilation loop outputs fields automatically inside scripts block -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Bottom Operational Flow Commit Triggers Buttons -->
+          <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-100">
+            <button onclick="flushActiveLocalCacheRegisters()" class="w-full sm:w-auto bg-white border border-[var(--border-line)] px-5 py-3 rounded-xl text-xs font-bold text-[var(--danger-crimson)] hover:bg-red-50 transition-all">
+              🗑️ Reset Session Registers
+            </button>
+            <button onclick="serializeAndCommitStateToLongitudinalDatabase()" class="w-full sm:w-auto bg-[var(--accent-orange)] px-8 py-3.5 rounded-xl text-xs font-bold text-white hover:bg-[var(--accent-hover)] transition-all shadow-md flex items-center gap-2 justify-center">
+              💾 Append Day Record to Sync Queue
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUMN 2: BACKEND MONITORS, JSON OBSERVERS & LIVE TERMINAL BUFFERS (4 COLS) -->
+      <div class="col-span-12 lg:col-span-4 space-y-8">
+        
+        <!-- Section A: Simulated Global Identity Privilege Access Switcher -->
+        <div class="metric-card p-6 space-y-4">
+          <h4 class="text-xs uppercase tracking-widest text-slate-400 font-bold">Privilege Router Simulator</h4>
+          <div class="grid grid-cols-2 gap-2" id="privilege-router-box">
+            <button onclick="toggleViewPrivilegeScope('DOCTOR')" id="scope-btn-DOCTOR" class="p-3 text-xs font-bold rounded-xl border text-center transition-all bg-[var(--teal-dark)] text-white border-[var(--teal-dark)] shadow-sm">
+              🩺 Physician View
+            </button>
+            <button onclick="toggleViewPrivilegeScope('PATIENT')" id="scope-btn-PATIENT" class="p-3 text-xs font-bold rounded-xl border text-center transition-all bg-white text-slate-600 border-[var(--border-line)] hover:bg-slate-50">
+              👤 Patient View
+            </button>
+          </div>
+          <p class="text-[10px] text-[var(--text-muted)] italic leading-normal text-center bg-slate-50 p-2.5 rounded-lg border border-dashed border-[var(--border-line)]">
+            Simulates dynamic page visibility based on role authorization rules.
+          </p>
+        </div>
+
+        <!-- Section B: Live Unified Realtime System Memory Observer Output Screen -->
+        <div class="metric-card p-6 flex flex-col justify-between h-[525px]">
+          <div class="space-y-2 mb-4">
+            <h3 class="display-font text-lg font-bold text-[var(--teal-dark)] mb-0.5">Live Database Pipeline Observer</h3>
+            <p class="text-xs text-[var(--text-muted)] leading-relaxed">Monitors long-term array records within local memory arrays, ready to map directly into an external server collection via HTTP POST endpoints.</p>
+          </div>
+
+          <!-- Live Visual Realtime Data Log Terminal Output Box Window Container -->
+          <div class="flex-1 terminal-window p-4 rounded-xl overflow-y-auto max-h-[380px] shadow-inner border border-slate-950">
+            <pre id="jsonLiveTerminalView">// Initializing structural sync pipeline listener logs...</pre>
+          </div>
+
+          <div class="pt-4 border-t border-gray-100 mt-4 flex items-center justify-between text-[9px] font-bold text-slate-400 uppercase tracking-widest select-none">
+            <span>Payload State: REST Ready</span>
+            <span class="text-[var(--success-green)] animate-pulse">● Database Connected</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+     5. REINFORCED LONGITUDINAL SYSTEM SIMULATION STORAGE ENGINE CODES
+     ========================================================================== -->
+  <script>
+    /**
+     * MASTER IDENTIFICATION CONFIGURATION ARRAY MANIFEST
+     * Symmetrically pairs metrics to your 7 active experimental keys.
+     */
+    const SCORING_UTILITY_MANIFEST = [
+      { id: 1, label: "1. Marigold Memory Recall",    key: "game1", maxPossibleScore: 7 },
+      { id: 2, label: "2. Courtyard Memories",       key: "game2", maxPossibleScore: 10 },
+      { id: 3, label: "3. Adaptive Patch Patrol",     key: "game3", maxPossibleScore: 10 },
+      { id: 4, label: "4. Garden Trail",              key: "game4", maxPossibleScore: 10 },
+      { id: 5, label: "5. Courtyard Delayed Recall",  key: "game5", maxPossibleScore: 10 },
+      { id: 6, label: "6. Clock Construction",        key: "game6", maxPossibleScore: 7 },
+      { id: 7, label: "7. Stroop Test (Part A)",      key: "game7", maxPossibleScore: 15 },
+      { id: 8, label: "7. Stroop Challenge (Part B)", key: "game7_stroop", maxPossibleScore: 25 }
+    ];
+
+    // Core Global Active State Objects Mapping Systems
+    let activeUserRolePrivilegeScope = "DOCTOR"; // Defaults to clinician inspection mode
+
+    /**
+     * Initializes engine interfaces, sets dates, and runs pipeline view loops.
+     */
+    function bootstrapDataSyncOrchestratorEngine() {
+      // Hardcode active baseline calendar date inside timestamp input element if blank
+      if (!document.getElementById('assessment_timestamp').value) {
+        document.getElementById('assessment_timestamp').value = "2026-06-03";
+      }
+
+      buildTargetInputFormTableFields();
+      refreshLiveJSONTerminalMonitorDisplay();
+    }
+
+    /**
+     * Compiles interactive markup rows for each item inside the active manifest array.
+     */
+    function buildTargetInputFormTableFields() {
+      let rawJSONString = localStorage.getItem('emmaSession') || localStorage.getItem('dementiaAssessmentSession');
+      
+      if (!rawJSONString) {
+        generateBaselineHealthyControlProfileDataMap();
+        rawJSONString = localStorage.getItem('emmaSession');
+      }
+
+      const currentSessionData = JSON.parse(rawJSONString);
+      const scores = currentSessionData.scores || {};
+      const errors = currentSessionData.errors || {};
+      const times  = currentSessionData.times  || {};
+
+      const computedRowsHTMLArrayStrings = SCORING_UTILITY_MANIFEST.map(module => {
+        const scoreVal = scores[module.key] !== undefined ? scores[module.key] : 0;
+        const errorVal = errors[module.key] !== undefined ? errors[module.key] : 0;
+        const timeVal  = times[module.key]  !== undefined ? times[module.key]  : 0;
+
+        return `
+          <tr class="hover:bg-slate-50/70 transition-colors">
+            <td class="p-4 font-semibold text-slate-900">${module.label}</td>
+            <td class="p-4 font-mono text-slate-400 text-[11px] select-all">${module.key}</td>
+            <td class="p-4">
+              <input type="number" id="score_${module.key}" min="0" max="${module.maxPossibleScore}" value="${scoreVal}" class="w-full text-center">
+            </td>
+            <td class="p-4">
+              <input type="number" id="error_${module.key}" min="0" value="${errorVal}" class="w-full text-center">
+            </td>
+            <td class="p-4">
+              <input type="number" id="time_${module.key}" min="0" value="${timeVal}" class="w-full text-center">
+            </td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('scoringFormTableBody').innerHTML = computedRowsHTMLArrayStrings.join('');
+    }
+
+    /**
+     * Encapsulates current form states to append data array blocks cleanly into longitudinal storage registries.
+     */
+    function serializeAndCommitStateToLongitudinalDatabase() {
+      // Package metadata headers matching the targeted backend user document structures
+      const metadataHeader = {
+        patient_uuid: document.getElementById('patient_uuid').value,
+        patient_name: document.getElementById('patient_name').value,
+        patient_age: parseInt(document.getElementById('patient_age').value) || 0,
+        clinical_cohort_id: document.getElementById('clinical_cohort_id').value,
+        doctor_signoff_id: document.getElementById('doctor_signoff_id').value,
+        assessment_timestamp: document.getElementById('assessment_timestamp').value
+      };
+
+      // Extract specific metric fields
+      const empiricalTelemetryMap = { scores: {}, errors: {}, times: {} };
+      SCORING_UTILITY_MANIFEST.forEach(module => {
+        const enteredScore = document.getElementById(`score_${module.key}`).value;
+        const enteredError = document.getElementById(`error_${module.key}`).value;
+        const enteredTime  = document.getElementById(`time_${module.key}`).value;
+
+        empiricalTelemetryMap.scores[module.key] = Math.min(module.maxPossibleScore, Math.max(0, parseInt(enteredScore) || 0));
+        empiricalTelemetryMap.errors[module.key] = Math.max(0, parseInt(enteredError) || 0);
+        empiricalTelemetryMap.times[module.key]  = Math.max(0, parseInt(enteredTime) || 0);
+      });
+
+      // Package everything into a structured document entry payload block
+      const comprehensiveUnifiedDocumentRecordEntry = {
+        record_uuid: "REC-" + Math.floor(Math.random() * 900000 + 100000),
+        metadata: metadataHeader,
+        session_telemetry: empiricalTelemetryMap
+      };
+
+      // Pull current array logs and push the new entry into the queue block
+      let dynamicLongitudinalRegistryString = localStorage.getItem('cognisuite_longitudinal_database');
+      let workingLongitudinalArray = [];
+      
+      if (dynamicLongitudinalRegistryString) {
+        workingLongitudinalArray = JSON.parse(dynamicLongitudinalRegistryString);
+      }
+      
+      workingLongitudinalArray.push(comprehensiveUnifiedDocumentRecordEntry);
+      localStorage.setItem('cognisuite_longitudinal_database', JSON.stringify(workingLongitudinalArray));
+
+      // Symmetrically keep the active single-session keys up to date for local visual reports dashboard loops
+      const flattenedSessionStringPayload = JSON.stringify(empiricalTelemetryMap);
+      localStorage.setItem('emmaSession', flattenedSessionStringPayload);
+      localStorage.setItem('dementiaAssessmentSession', flattenedSessionStringPayload);
+
+      refreshLiveJSONTerminalMonitorDisplay();
+      alert("Day Record compiled successfully. Session entry added to the longitudinal database timeline.");
+    }
+
+    /**
+     * Refreshes the terminal text console with structured, indents-formatted array records on modification updates.
+     */
+    function refreshLiveJSONTerminalMonitorDisplay() {
+      const targetTerminalDisplayBox = document.getElementById('jsonLiveTerminalView');
+      
+      if (activeUserRolePrivilegeScope === "PATIENT") {
+        // Strict privacy rule: If user views as a patient, obscure deep internal clinician arrays parameters data
+        targetTerminalDisplayBox.textContent = JSON.stringify({
+          status: "SUCCESS_AUTHORIZED",
+          message: "Patient account sync active. Diagnostics telemetry matrices routed securely to backend servers.",
+          active_subject_uuid: document.getElementById('patient_uuid').value,
+          last_assessment_logged: document.getElementById('assessment_timestamp').value
+        }, null, 2);
+        return;
+      }
+
+      // Default: Full physician view unrolls long-term tracking maps securely inside text log blocks
+      const comprehensiveLongitudinalLogsString = localStorage.getItem('cognisuite_longitudinal_database');
+      
+      if (comprehensiveLongitudinalLogsString) {
+        try {
+          const parsedDatabaseArray = JSON.parse(comprehensiveLongitudinalLogsString);
+          targetTerminalDisplayBox.textContent = `// TOTAL TRACKED WORKSPACE ENTRIES COUNT: ${parsedDatabaseArray.length} ENTRIES\n\n` + JSON.stringify(parsedDatabaseArray, null, 2);
+        } catch (e) {
+          targetTerminalDisplayBox.textContent = comprehensiveLongitudinalLogsString;
+        }
+      } else {
+        targetTerminalDisplayBox.textContent = "// Longitudinal tracking map records empty. Trigger simulation loops above to write data tracks.";
+      }
+    }
+
+    /**
+     * Toggles layout configurations based on role parameters dynamically.
+     */
+    function toggleViewPrivilegeScope(targetRoleScopeString) {
+      activeUserRolePrivilegeScope = targetRoleScopeString;
+      
+      const doctorButtonRef  = document.getElementById('scope-btn-DOCTOR');
+      const patientButtonRef = document.getElementById('scope-btn-PATIENT');
+
+      if (targetRoleScopeString === "DOCTOR") {
+        doctorButtonRef.className  = "p-3 text-xs font-bold rounded-xl border text-center transition-all bg-[var(--teal-dark)] text-white border-[var(--teal-dark)] shadow-sm";
+        patientButtonRef.className = "p-3 text-xs font-bold rounded-xl border text-center transition-all bg-white text-slate-600 border-[var(--border-line)] hover:bg-slate-50";
+      } else {
+        patientButtonRef.className = "p-3 text-xs font-bold rounded-xl border text-center transition-all bg-[var(--teal-dark)] text-white border-[var(--teal-dark)] shadow-sm";
+        doctorButtonRef.className  = "p-3 text-xs font-bold rounded-xl border text-center transition-all bg-white text-slate-600 border-[var(--border-line)] hover:bg-slate-50";
+      }
+
+      refreshLiveJSONTerminalMonitorDisplay();
+    }
+
+    /**
+     * Multi-interval data seed simulation track.
+     * Automatically injects 5 separate chronological record entries to simulate rapid user improvement.
+     */
+    function simulateDailyProgressRun() {
+      clearLongitudinalDatabase();
+      const mockPatientId = document.getElementById('patient_uuid').value;
+      const mockPatientName = document.getElementById('patient_name').value;
+      const cohortId = document.getElementById('clinical_cohort_id').value;
+
+      // Programmatic 5-day array tracing model tracking linear latency drops and accuracy increases
+      const progressTimelineSeeds = [
+        { day: "2026-05-29", times: { g1:22, g2:30, g3:25, g4:18, g5:20, g6:45, g7:30, g7s:45 }, scores: { g1:4, g2:5, g3:6, g4:7, g5:4, g6:4, g7:10, g7s:14 }, errors: { g1:2, g2:2, g3:3, g4:2, g5:3, g6:2, g7:3, g7s:6 } },
+        { day: "2026-05-30", times: { g1:19, g2:26, g3:22, g4:15, g5:18, g6:38, g7:26, g7s:38 }, scores: { g1:5, g2:6, g3:7, g4:8, g5:5, g6:5, g7:11, g7s:16 }, errors: { g1:1, g2:1, g3:2, g4:1, g5:2, g6:1, g7:2, g7s:4 } },
+        { day: "2026-05-31", times: { g1:16, g2:22, g3:19, g4:12, g5:14, g6:32, g7:22, g7s:32 }, scores: { g1:5, g2:8, g3:8, g4:9, g5:6, g6:5, g7:13, g7s:19 }, errors: { g1:1, g2:0, g3:1, g4:1, g5:1, g6:1, g7:1, g7s:2 } },
+        { day: "2026-06-01", times: { g1:14, g2:18, g3:16, g4:10, g5:11, g6:26, g7:19, g7s:26 }, scores: { g1:6, g2:9, g3:9, g4:10, g5:7, g6:6, g7:14, g7s:22 }, errors: { g1:0, g2:0, g3:0, g4:0, g5:1, g6:0, g7:0, g7s:1 } },
+        { day: "2026-06-02", times: { g1:11, g2:14, g3:13, g4:7,  g5:9,  g6:20, g7:16, g7s:20 }, scores: { g1:7, g2:10, g3:10, g4:10, g5:9, g6:7, g7:15, g7s:24 }, errors: { g1:0, g2:0, g3:0, g4:0, g5:0, g6:0, g7:0, g7s:0 } }
+      ];
+
+      commitSimulatedBatchToLongitudinalRegistry(progressTimelineSeeds, mockPatientId, mockPatientName, cohortId);
+    }
+
+    /**
+     * Multi-interval data seed simulation track.
+     * Injects 5 sequential dates tracing functional path collapse.
+     */
+    function simulateDeteriorationRun() {
+      clearLongitudinalDatabase();
+      const mockPatientId = document.getElementById('patient_uuid').value;
+      const mockPatientName = document.getElementById('patient_name').value;
+      const cohortId = document.getElementById('clinical_cohort_id').value;
+
+      // Programmatic 5-day degradation tracing model showing escalating mistakes and latency spikes
+      const deteriorationTimelineSeeds = [
+        { day: "2026-05-29", times: { g1:12, g2:16, g3:15, g4:8,  g5:10, g6:22, g7:18, g7s:22 }, scores: { g1:6, g2:9, g3:9, g4:10, g5:8, g6:6, g7:14, g7s:23 }, errors: { g1:0, g2:0, g3:0, g4:0, g5:0, g6:0, g7:0, g7s:1 } },
+        { day: "2026-05-30", times: { g1:15, g2:20, g3:18, g4:12, g5:14, g6:28, g7:22, g7s:30 }, scores: { g1:5, g2:7, g3:8, g4:8,  g5:6, g6:5, g7:12, g7s:19 }, errors: { g1:1, g2:1, g3:1, g4:1, g5:2, g6:1, g7:1, g7s:3 } },
+        { day: "2026-05-31", times: { g1:20, g2:26, g3:22, g4:18, g5:19, g6:38, g7:28, g7s:42 }, scores: { g1:4, g2:5, g3:6, g4:6,  g5:4, g6:4, g7:10, g7s:15 }, errors: { g1:2, g2:3, g3:2, g4:2, g5:4, g6:2, g7:2, g7s:5 } },
+        { day: "2026-06-01", times: { g1:28, g2:35, g3:30, g4:25, g5:26, g6:55, g7:36, g7s:58 }, scores: { g1:3, g2:3, g3:4, g4:3,  g5:2, g6:2, g7:7,  g7s:10 }, errors: { g1:3, g2:5, g3:4, g4:4, g5:6, g6:4, g7:4, g7s:8 } },
+        { day: "2026-06-02", times: { g1:40, g2:50, g3:45, g4:38, g5:40, g6:80, g7:48, g7s:85 }, scores: { g1:1, g2:2, g3:2, g4:1,  g5:0, g6:1, g7:5,  g7s:6 },  errors: { g1:5, g2:7, g3:6, g4:6, g5:9, g6:5, g7:6, g7s:14 } }
+      ];
+
+      commitSimulatedBatchToLongitudinalRegistry(deteriorationTimelineSeeds, mockPatientId, mockPatientName, cohortId);
+    }
+
+    /**
+     * Loops over generated timelines, formatting historical metrics into the database payload framework.
+     */
+    function commitSimulatedBatchToLongitudinalRegistry(timelineSeeds, uid, name, cohort) {
+      const compiledBatchDatabaseArray = [];
+
+      timelineSeeds.forEach(run => {
+        const structuralRecordItem = {
+          record_uuid: "REC-" + Math.floor(Math.random() * 900000 + 100000),
+          metadata: {
+            patient_uuid: uid, patient_name: name, patient_age: 72,
+            clinical_cohort_id: cohort, doctor_signoff_id: "DR-RAMAN-2026",
+            assessment_timestamp: run.day
+          },
+          session_telemetry: {
+            scores: { game1: run.scores.g1, game2: run.scores.g2, game3: run.scores.g3, game4: run.scores.g4, game5: run.scores.g5, game6: run.scores.g6, game7: run.scores.g7, game7_stroop: run.scores.g7s },
+            errors: { game1: run.errors.g1, game2: run.errors.g2, game3: run.errors.g3, game4: run.errors.g4, game5: run.errors.g5, game6: run.errors.g6, game7: run.errors.g7, game7_stroop: run.errors.g7s },
+            times:  { game1: run.times.g1,  game2: run.times.g2,  game3: run.times.g3,  game4: run.times.g4,  game5: run.times.g5,  game6: run.times.g6,  game7: run.times.g7,  game7_stroop: run.times.g7s }
+          }
+        };
+        compiledBatchDatabaseArray.push(structuralRecordItem);
+      });
+
+      localStorage.setItem('cognisuite_longitudinal_database', JSON.stringify(compiledBatchDatabaseArray));
+      
+      // Sync the final timeline position as the active baseline session config data
+      const finalDayReference = compiledBatchDatabaseArray[compiledBatchDatabaseArray.length - 1].session_telemetry;
+      localStorage.setItem('emmaSession', JSON.stringify(finalDayReference));
+      
+      buildTargetInputFormTableFields();
+      refreshLiveJSONTerminalMonitorDisplay();
+      alert("Longitudinal data simulation complete. 5 consecutive clinical session tracking blocks generated.");
+    }
+
+    /**
+     * Instantiates placeholder baseline profiles if storage registers are clear.
+     */
+    function generateBaselineHealthyControlProfileDataMap() {
+      const basicControlModel = {
+        scores: { game1: 6, game2: 9, game3: 9, game4: 10, game5: 8, game6: 6, game7: 14, game7_stroop: 23 },
+        errors: { game1: 0, game2: 0, game3: 0, game4: 0,  game5: 0, game6: 0, game7: 0,  game7_stroop: 1 },
+        times:  { game1: 12, game2: 15, game3: 14, game4: 7,   game5: 9,  game6: 22, game7: 18, game7_stroop: 22 }
+      };
+      localStorage.setItem('emmaSession', JSON.stringify(basicControlModel));
+    }
+
+    /**
+     * Empties single-session working caches cleanly.
+     */
+    function flushActiveLocalCacheRegisters() {
+      if (confirm("Reset current daily parameters fields?")) {
+        localStorage.removeItem('emmaSession');
+        localStorage.removeItem('dementiaAssessmentSession');
+        bootstrapDataSyncOrchestratorEngine();
+      }
+    }
+
+    /**
+     * Completely drops long-term timeline storage maps.
+     */
+    function clearLongitudinalDatabase() {
+      localStorage.removeItem('cognisuite_longitudinal_database');
+      refreshLiveJSONTerminalMonitorDisplay();
+      console.log("Longitudinal tracking registry history erased cleanly.");
+    }
+
+    // Bind system engines cleanly to window lifecycle DOM hooks
+    document.addEventListener('DOMContentLoaded', bootstrapDataSyncOrchestratorEngine);
+  </script>
+</body>
+</html>

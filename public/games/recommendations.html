@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CogniSuite — Tailored Clinical Interventions</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,700;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* ==========================================================================
+       1. CLINICAL CORE THEME PALETTE CONFIGURATION (HSL SPECIFICATIONS)
+       ========================================================================== */
+    :root {
+      --bg-canvas: hsl(115, 20%, 95%);
+      --card-bg: #ffffff;
+      --teal-dark: hsl(120, 55%, 15%);
+      --teal-light: hsl(115, 45%, 25%);
+      --text-main: hsl(25, 40%, 20%);
+      --text-muted: hsl(115, 35%, 35%);
+      --border-line: hsl(35, 35%, 85%);
+      --accent-orange: hsl(28, 40%, 52%);
+      --accent-hover: hsl(42, 34%, 48%);
+      --danger-crimson: hsl(0, 75%, 45%);
+      --success-green: hsl(140, 65%, 30%);
+      --warning-gold: hsl(42, 75%, 40%);
+      
+      --prescription-bg: hsl(35, 35%, 98%);
+    }
+
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+      font-family: 'Poppins', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body { 
+      background-color: var(--bg-canvas); 
+      color: var(--text-main); 
+      min-height: 100vh; 
+      padding-top: 120px; 
+      scroll-behavior: smooth;
+    }
+
+    .display-font { font-family: 'Playfair Display', serif; }
+    
+    .metric-card { 
+      background: var(--card-bg); 
+      border: 1px solid var(--border-line); 
+      border-radius: 24px; 
+      box-shadow: 0 10px 30px rgba(93, 124, 99, 0.05);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .metric-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(93, 124, 99, 0.1);
+    }
+
+    .nav-link { 
+      padding: 8px 20px; 
+      border-radius: 20px; 
+      font-size: 13px; 
+      font-weight: 600; 
+      transition: all 0.2s ease-in-out; 
+      color: var(--text-muted); 
+      text-decoration: none; 
+    }
+    .nav-link.active { background: var(--teal-dark); color: white; }
+    .nav-link:hover:not(.active) { background: hsl(115, 42%, 92%); color: var(--teal-dark); }
+
+    .action-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-canvas); }
+    ::-webkit-scrollbar-thumb { background: var(--border-line); border-radius: 4px; }
+
+    @media print {
+      nav, .no-print, button { display: none !important; }
+      body { background: #ffffff !important; padding-top: 0 !important; }
+      .metric-card { border: 1px solid #000000 !important; box-shadow: none !important; background: #ffffff !important; page-break-inside: avoid; margin-bottom: 24px !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-[var(--border-line)] py-4 px-8 flex justify-between items-center shadow-sm no-print">
+    <div class="display-font text-2xl font-bold text-[var(--teal-dark)]">Cogni<span>Suite</span></div>
+    <div class="nav-links flex gap-4 items-center">
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
+      <a href="interpretation.html" class="nav-link">Interpretation</a>
+      <a href="reporting.html" class="nav-link">Visual Report</a>
+      <a href="recommendations.html" class="nav-link active">Recommendations</a>
+    </div>
+  </nav>
+
+  <main class="pb-20 px-4 sm:px-8 max-w-7xl mx-auto space-y-8">
+    
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-[var(--border-line)] pb-6">
+      <div>
+        <div class="text-[var(--success-green)] font-bold tracking-[3px] uppercase text-xs mb-2">Automated Therapeutic Intervention System</div>
+        <h1 class="display-font text-4xl sm:text-5xl font-black text-[var(--teal-dark)]">Prescriptive Pathways</h1>
+      </div>
+      <button onclick="window.print()" class="no-print bg-[var(--teal-dark)] px-6 py-3 rounded-xl text-sm font-bold text-white hover:bg-[var(--teal-light)] transition-all flex items-center gap-2 shadow-md">
+        <span>🖨️</span> Print Strategy Guide
+      </button>
+    </header>
+
+    <section class="metric-card p-6 bg-gradient-to-r from-emerald-50/40 via-white to-transparent border-l-4 border-l-[var(--success-green)]">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h4 class="font-bold text-lg text-[var(--teal-dark)] mb-0.5">Targeted Intervention Strategy Activated</h4>
+          <p class="text-xs text-[var(--text-muted)]">Prescriptive matrices below have been compiled based on your latest cognitive registration performance markers.</p>
+        </div>
+        <div class="text-xs font-mono font-bold text-slate-500 bg-slate-100/80 px-3 py-1.5 rounded-xl border border-slate-200/40" id="summary-metrics-token">
+          Inconsistencies Tracked: --
+        </div>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <div class="col-span-12 lg:col-span-4 space-y-6">
+        <div class="px-2">
+          <h3 class="display-font text-xl font-bold text-[var(--teal-dark)]">Baseline Longevity Protocols</h3>
+          <p class="text-xs text-[var(--text-muted)]">Core physical hygiene adjustments supporting cognitive reserve.</p>
+        </div>
+
+        <div class="metric-card p-6 space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="action-badge bg-blue-50 text-blue-700 border border-blue-100">Glymphatic Clearance</span>
+            <span class="text-lg">🌙</span>
+          </div>
+          <h4 class="font-bold text-base text-[var(--teal-dark)]">Optimized Sleep Cycles</h4>
+          <p class="text-xs text-[var(--text-muted)] leading-relaxed"> Maintain 7.5 to 9 hours of uninterrupted slow-wave sleep. Consistent circadian alignments optimize extracellular fluid clearing mechanisms, protecting metabolic health.</p>
+        </div>
+
+        <div class="metric-card p-6 space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="action-badge bg-emerald-50 text-[var(--success-green)] border border-emerald-100">Anti-Neuroinflammatory</span>
+            <span class="text-lg">🥗</span>
+          </div>
+          <h4 class="font-bold text-base text-[var(--teal-dark)]">Targeted Nutrition Matrix</h4>
+          <p class="text-xs text-[var(--text-muted)] leading-relaxed">Emphasize high-polyphenol intake, Omega-3 fatty acids, and green leafy vegetables. Restricting simple refined carbohydrates minimizes systematic systemic microvascular inflammation paths.</p>
+        </div>
+
+        <div class="metric-card p-6 space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="action-badge bg-amber-50 text-[var(--warning-gold)] border border-amber-100">BDNF Up-Regulation</span>
+            <span class="text-lg">🏃‍♂️</span>
+          </div>
+          <h4 class="font-bold text-base text-[var(--teal-dark)]">Angiogenesis Exercise Triggers</h4>
+          <p class="text-xs text-[var(--text-muted)] leading-relaxed">Incorporate 150 minutes of weekly Zone 2 aerobic exertion combined with targeted resistance mechanics. Physical exertion acts as a master trigger for brain-derived neurotrophic factor generation.</p>
+        </div>
+      </div>
+
+      <div class="col-span-12 lg:col-span-8 space-y-6">
+        <div class="px-2">
+          <h3 class="display-font text-xl font-bold text-[var(--teal-dark)]">Targeted Cognitive Remediation Circuits</h3>
+          <p class="text-xs text-[var(--text-muted)]">Dynamic corrective interventions triggered programmatically based on localized performance deviations.</p>
+        </div>
+
+        <div class="space-y-4" id="dynamic-prescriptions-target-box">
+          </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    /**
+     * CLINICAL INTERVENTION KNOWLEDGE MATRIX SCHEMAS
+     * Maps performance keys directly to targeted, actionable exercises.
+     */
+    const THERAPEUTIC_REMEDIATION_CATALOG = [
+      {
+        key: "game1", altKey: "module1",
+        name: "Spatial Configuration Maintenance Circuit",
+        triggerCondition: (err, score) => err > 0 || score < 6,
+        badgeText: "Target Network: DLPFC / Parietal",
+        badgeStyle: "bg-purple-50 text-purple-700 border-purple-100",
+        taskName: "N-Back Complex Visual Calibration Grid",
+        strategy: "Execute 15 minutes of dual 2-back spatial orientation tasks daily. Focus on maintaining multi-axis grid trajectory landmarks without writing down references to force internal visuospatial scratchpad utilization.",
+        mechanics: "Strengthens trace durability inside the dorsolateral prefrontal cortex, protecting mental rotation calculations from swift working memory decay loops."
+      },
+      {
+        key: "game2", altKey: "module2",
+        name: "Episodic Property Binding Reinforcement",
+        triggerCondition: (err, score) => err > 0 || score < 8,
+        badgeText: "Target Network: Medial Temporal Lobe",
+        badgeStyle: "bg-indigo-50 text-indigo-700 border-indigo-100",
+        taskName: "Multi-Attribute Semantic Chunking Sequences",
+        strategy: "Practice structured item-attribute linkage methods. When evaluating a visual set, deliberately associate each feature with an explicit sensory property (color, shape, relative weight) to build deeper associative anchors.",
+        mechanics: "Promotes entorhinal feature integration pathways, supporting initial indexing speeds before records drop into deep consolidation networks."
+      },
+      {
+        key: "game3", altKey: "module3",
+        name: "Continuous Visual Filter Calibration",
+        triggerCondition: (err, score) => err > 0 || score < 8,
+        badgeText: "Target Network: Frontoparietal Attentional",
+        badgeStyle: "bg-teal-50 text-teal-700 border-teal-100",
+        taskName: "High-Density Sustained Search Arrays",
+        strategy: "Engage in timed clutter-suppression exercises using rich distractor distributions. Task yourself with tracking single target alterations over extended tracking intervals while inhibiting peripheral changes.",
+        mechanics: "Improves signaling gain within frontoparietal attention hubs, resetting structural filtering limits against high-frequency distraction errors."
+      },
+      {
+        key: "game4", altKey: "module4",
+        name: "Executive Shifting & Trail Flexibility Training",
+        triggerCondition: (err, score) => err > 0 || score < 9,
+        badgeText: "Target Network: Anterior Cingulate Matrix",
+        badgeStyle: "bg-amber-50 text-amber-700 border-amber-100",
+        taskName: "Alternating Cross-Paradigm Task-Switching Matrices",
+        strategy: "Utilize alphanumeric set-shifting exercises (alternating between processing ascendency scales and word arrays rapidly). Time individual sets and prioritize switching smoothness over raw velocity.",
+        mechanics: "Improves prefrontal flexibility indices, optimizing tracking response velocities when navigating alternate conceptual tracks under load."
+      },
+      {
+        key: "game5", altKey: "module5",
+        name: "Hippocampal Consolidation Stability Track",
+        triggerCondition: (err, score) => err > 0 || score < 8,
+        badgeText: "Target Network: Hippocampal Circuit",
+        badgeStyle: "bg-rose-50 text-rose-700 border-rose-100",
+        taskName: "Deferred Spatial Boundary Reconstruction Trails",
+        strategy: "Incorporate deferred memory reconstruction routines into daily habits. Review an asset array, introduce a structured 20-minute cognitive distraction interval (e.g., active reading), then manually diagram the complete original array boundary items.",
+        mechanics: "Forces hippocampal retrieval pathways to locate deferred semantic traces, mitigating rapid decay across storage consolidation loops."
+      },
+      {
+        key: "game6", altKey: "module6",
+        name: "Visuospatial Spatial Orientation Construction Praxis",
+        triggerCondition: (err, score) => err > 0 || score < 6,
+        badgeText: "Target Network: Inferior Parietal Lobule",
+        badgeStyle: "bg-orange-50 text-orange-700 border-orange-100",
+        taskName: "Hierarchical Spatial-Geometric Translation Training",
+        strategy: "Practice converting 2D architectural wireframes into explicit 3D mental concepts, or sketch isometric objects from varied alternative perspectives. Focus on maintaining relative component distances and angles manually.",
+        mechanics: "Supports right-parietal construction networks, restoring manual coordination speeds and spatial representation indices."
+      },
+      {
+        key: "game7_stroop", altKey: "module7_stroop",
+        name: "Cingulo-Frontal Response Intercept Suppression Circuit",
+        triggerCondition: (err, score) => err > 0 || score < 20,
+        badgeText: "Target Network: Anterior Cingulate / ACC",
+        badgeStyle: "bg-red-50 text-red-700 border-red-100",
+        taskName: "Incongruent Conflict Interference Suppression Triggers",
+        strategy: "Engage in computerized interference resistance drills (e.g., directional arrow conflict arrays). Practice suppressing automatic reactions to misleading physical cues, maintaining focused target extraction.",
+        mechanics: "Boosts active conflict resolution margins in the anterior cingulate cortex, lowering latency penalties generated by processing conflicting tasks."
+      }
+    ];
+
+    /**
+     * Initializes engine and unrolls performance records to execute strategy maps.
+     */
+    function bootRemediationPathwaysEngine() {
+      console.log("CogniSuite Prescription Matrix online. Initializing memory hydration cycle...");
+      
+      let rawJSON = localStorage.getItem('emmaSession') || localStorage.getItem('dementiaAssessmentSession');
+      
+      // Fallback control dataset if tracking keys are empty
+      if (!rawJSON) {
+        const dummyModel = {
+          scores: { game1: 5, game2: 4, game3: 7, game4: 10, game5: 6, game6: 5, game7: 11, game7_stroop: 19 },
+          errors: { game1: 0, game2: 0, game3: 0, game4: 0,  game5: 1, game6: 0, game7: 1,  game7_stroop: 2 },
+          times:  { game1: 15, game2: 20, game3: 18, game4: 8,   game5: 10, game6: 30, game7: 22, game7_stroop: 22 }
+        };
+        localStorage.setItem('emmaSession', JSON.stringify(dummyModel));
+        rawJSON = localStorage.getItem('emmaSession');
+      }
+
+      try {
+        const parsedSession = JSON.parse(rawJSON);
+        compileTargetedPrescriptionsList(parsedSession);
+      } catch (e) {
+        console.error("Critical error inside prescription pipeline initialization:", e);
+      }
+    }
+
+    /**
+     * Parses local metrics to append matching remediation cards to the layout.
+     */
+    function compileTargetedPrescriptionsList(session) {
+      const scores = session.scores || {};
+      const errors = session.errors || {};
+
+      const fetchVal = (dict, key, alt) => dict[key] !== undefined ? Number(dict[key]) : (dict[alt] !== undefined ? Number(dict[alt]) : 0);
+
+      let totalGrossErrorsTrackedAcrossBattery = 0;
+      const adaptivePrescriptionsMarkupBufferArray = [];
+
+      // Calculate aggregated deviations to update the HUD indicator token
+      Object.keys(errors).forEach(k => { totalGrossErrorsTrackedAcrossBattery += Number(errors[k]); });
+      document.getElementById('summary-metrics-token').textContent = `Battery Deviations Mapped: ${totalGrossErrorsTrackedAcrossBattery}`;
+
+      // Step through prescription options mapping logic matrices
+      THERAPEUTIC_REMEDIATION_CATALOG.forEach(prescription => {
+        const e = fetchVal(errors, prescription.key, prescription.altKey);
+        const s = fetchVal(scores, prescription.key, prescription.altKey);
+
+        // Check if condition parameters match trigger thresholds
+        if (prescription.triggerCondition(e, s)) {
+          adaptivePrescriptionsMarkupBufferArray.push(`
+            <div class="metric-card p-6 space-y-4 border-l-4 border-l-[var(--accent-orange)] bg-gradient-to-r from-orange-50/10 to-transparent transition-all">
+              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-gray-100 pb-3">
+                <div>
+                  <h4 class="font-bold text-base text-[var(--teal-dark)]">${prescription.name}</h4>
+                  <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mt-0.5">Clinical Prescription Track</div>
+                </div>
+                <span class="action-badge ${prescription.badgeStyle} border">${prescription.badgeText}</span>
+              </div>
+              
+              <div class="space-y-3 text-xs">
+                <div>
+                  <span class="font-bold text-slate-400 uppercase tracking-wide text-[9px] block mb-1">Target Remediation Task</span>
+                  <span class="text-slate-900 font-bold text-sm bg-slate-100 px-2 py-1 rounded inline-block mt-0.5">${prescription.taskName}</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  <div class="bg-white border border-[var(--border-line)] p-3 rounded-xl shadow-sm">
+                    <span class="font-bold text-[var(--accent-orange)] uppercase tracking-wide text-[9px] block mb-1">Daily Protocol Strategy</span>
+                    <span class="text-[var(--text-main)] font-normal leading-relaxed">${prescription.strategy}</span>
+                  </div>
+                  <div class="bg-white border border-[var(--border-line)] p-3 rounded-xl shadow-sm">
+                    <span class="font-bold text-[var(--teal-light)] uppercase tracking-wide text-[9px] block mb-1">Functional Impact Mechanism</span>
+                    <span class="text-[var(--text-main)] font-normal leading-relaxed">${prescription.mechanics}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `);
+        }
+      });
+
+      // Clear layout and inject stable parameter card if no deviation triggers hit
+      if (adaptivePrescriptionsMarkupBufferArray.length === 0) {
+        document.getElementById('dynamic-prescriptions-target-box').innerHTML = `
+          <div class="metric-card p-8 text-center space-y-3 border-l-4 border-l-[var(--success-green)]">
+            <div class="text-3xl">🛡️</div>
+            <h4 class="font-bold text-lg text-[var(--teal-dark)]">All Systems Within Optimal Operational Range</h4>
+            <p class="text-xs text-[var(--text-muted)] max-w-md mx-auto leading-relaxed">
+              Performance metrics match or exceed target control baselines across all modules. Continue with baseline longevity protocols to maintain current cognitive reserve levels.
+            </p>
+          </div>
+        `;
+      } else {
+        document.getElementById('dynamic-prescriptions-target-box').innerHTML = adaptivePrescriptionsMarkupBufferArray.join('');
+      }
+    }
+
+    // Direct automated ignition on page mount lifecycle target
+    document.addEventListener('DOMContentLoaded', bootRemediationPathwaysEngine);
+  </script>
+</body>
+</html>

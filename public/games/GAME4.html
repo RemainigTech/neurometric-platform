@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 4 — Garden Trail Test | Emma's Garden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'DM Sans', 'Trebuchet MS', sans-serif; }
+
+body {
+  /* Grounded Red spectrum base background setting (approx 34% saturation) */
+  background: hsl(0, 34%, 15%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.laptop-screen {
+  position: relative;
+  width: 100vw;
+  height: 56.25vw; 
+  max-height: 100vh;
+  max-width: 177.78vh; 
+  /* Blended adaptive background using Blue/Cyan hierarchy points down into soft Green layers */
+  background: linear-gradient(to bottom, hsl(195, 35%, 88%) 0%, hsl(115, 45%, 90%) 40%, hsl(115, 42%, 82%) 100%);
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+/* Progress bar */
+.progress-bar { position: absolute; top: 0; left: 0; right: 0; height: 6px; background: rgba(0, 0, 0, 0.05); z-index: 1000; }
+/* Primary preference Orange mix applied within the exact 40% saturation ceiling */
+.progress-fill { height: 100%; background: linear-gradient(to right, hsl(28, 40%, 52%), hsl(42, 34%, 62%)); width: 40%; transition: width .6s ease; }
+
+/* Module badge */
+.module-badge { 
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(214, 110, 31, 0.2);
+  border-radius: 30px; padding: 5px 20px; font-size: 11px; font-weight: 700;
+  color: hsl(28, 40%, 40%); letter-spacing: 1px; text-transform: uppercase; z-index: 999;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+}
+
+/* Landscape Scenery Elements */
+.sun { position: absolute; top: 40px; right: 70px; width: 130px; height: 130px; border-radius: 50%; background: hsl(42, 34%, 90%); box-shadow: 0 0 90px rgba(255,229,141,0.55); pointer-events: none; }
+.cloud { position: absolute; font-size: 90px; opacity: 0.45; pointer-events: none; }
+.hill { position: absolute; border-radius: 50%; bottom: 120px; pointer-events: none; }
+.hill1 { width: 700px; height: 260px; background: hsl(115, 42%, 82%); left: -120px; }
+.hill2 { width: 760px; height: 300px; background: hsl(115, 45%, 72%); left: 320px; }
+.hill3 { width: 700px; height: 260px; background: hsl(115, 40%, 78%); right: -100px; }
+.ground { position: absolute; width: 100%; height: 180px; bottom: 0;
+  background: linear-gradient(to bottom, hsl(115, 45%, 72%), hsl(115, 42%, 65%));
+  border-top-left-radius: 70px; border-top-right-radius: 70px; pointer-events: none; }
+
+/* Adjusted title height to avoid UI collisions */
+.title { position: absolute; width: 100%; top: 92px; text-align: center;
+  font-size: 1.6rem; font-weight: 700; color: hsl(25, 40%, 25%); z-index: 5;
+  font-family: 'Playfair Display', Georgia, serif; pointer-events: none; }
+
+/* HUD layout system structures */
+.top-ui { 
+  position: absolute; top: 42px; left: 50%; transform: translateX(-50%);
+  width: 94%; display: flex; justify-content: space-between; align-items: center; z-index: 300; gap: 12px; 
+  pointer-events: none;
+}
+.info-box { 
+  background: rgba(255, 255, 255, 0.97); padding: 6px 16px; border-radius: 18px;
+  flex: 1; text-align: center; font-size: 0.95rem; color: hsl(25, 40%, 25%);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid rgba(255, 255, 255, 0.9);
+  display: flex; flex-direction: column; justify-content: center; 
+  pointer-events: auto;
+}
+.info-box .lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: hsl(30, 20%, 50%); display: block; margin-bottom: 2px; }
+.info-box.danger-lbl { background: rgba(0, 34%, 30%, 0.03); border: 1px solid rgba(0, 34%, 30%, 0.1); }
+
+.util-btn { 
+  background: white; border: 1px solid rgba(214, 110, 31, 0.3); width: 38px; height: 38px;
+  border-radius: 50%; cursor: pointer; font-size: 1rem; display: inline-flex;
+  align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  transition: 0.2s; color: hsl(25, 40%, 30%); pointer-events: auto;
+}
+.util-btn:hover { transform: scale(1.05); background: hsl(30, 35%, 95%); }
+
+/* Story Introduction Component Overlay */
+.story-screen { position: absolute; inset: 0; z-index: 400; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 40px; background: rgba(255, 248, 240, 0.4); backdrop-filter: blur(3px); }
+.emma { position: absolute; left: 40px; bottom: 20px; font-size: 180px; animation: float 3s ease-in-out infinite; user-select: none; pointer-events: none;}
+@keyframes float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
+
+.dialog-box { position: absolute; left: 255px; bottom: 175px; width: 720px; max-width: 57%;
+  background: rgba(255, 255, 255, 0.99); border-radius: 28px; padding: 28px 34px; border: 2px solid hsl(35, 35%, 85%);
+  box-shadow: 0 16px 40px rgba(139,90,43,0.15); }
+.dialog-name { font-family: 'Playfair Display', Georgia, serif; font-size: 1.7rem; font-weight: 700; color: hsl(25, 40%, 30%); margin-bottom: 14px; }
+.dialog-step { font-size: 9px; color: hsl(30, 30%, 60%); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+.dialog-text { font-size: 1.1rem; line-height: 1.75; color: hsl(25, 35%, 20%); }
+
+.action-btn { border: none; background: hsl(28, 40%, 52%); color: white;
+  padding: 13px 32px; border-radius: 16px; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: .2s;
+  box-shadow: 0 4px 12px rgba(214,110,31,0.3); display: inline-block; margin-top: 15px;}
+.action-btn:hover { background: hsl(42, 34%, 48%); transform: scale(1.02); }
+
+.secondary-btn { border: 1px solid hsl(28, 40%, 52%); background: transparent; color: hsl(28, 40%, 52%);
+  padding: 12px 24px; border-radius: 14px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: .2s;
+  display: inline-block; margin-top: 15px; margin-left: 10px; }
+.secondary-btn:hover { background: hsl(30, 35%, 95%); }
+
+/* FIXED: Moved top positioning down to 57% and reduced height to 76% to safely stop header overlaps */
+.game-area { position: absolute; inset: 0; display: none; z-index: 50; }
+.game-card { position: absolute; top: 57%; left: 50%; transform: translate(-50%, -50%);
+  width: 94%; height: 76%; background: rgba(255, 255, 255, 0.98); border: 2px solid hsl(35, 35%, 85%);
+  border-radius: 32px; box-shadow: 0 20px 45px rgba(0,0,0,0.12); overflow: hidden; }
+.top-bar { width: 100%; height: 64px; border-bottom: 1px solid rgba(0,0,0,0.07);
+  display: flex; align-items: center; justify-content: space-between; padding: 0 36px; }
+.badge { background: hsl(42, 34%, 93%); color: hsl(25, 40%, 35%); padding: 6px 18px; border-radius: 28px;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+.connect-text { font-size: 0.95rem; color: hsl(25, 35%, 25%); font-weight: 600; }
+
+#gameSvg { width: 100%; height: calc(100% - 64px); background: hsl(35, 20%, 99%); }
+.node { fill: #fffdf7; stroke: hsl(35, 35%, 85%); stroke-width: 2.5; cursor: pointer; transition: .15s;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08)); }
+.node:hover { fill: hsl(42, 34%, 90%); }
+.node.correct { fill: hsl(115, 42%, 92%); stroke: hsl(115, 45%, 50%); }
+.node.wrong { fill: hsl(0, 34%, 94%); stroke: hsl(0, 34%, 60%); }
+.node-text { font-size: 24px; font-weight: 700; fill: hsl(25, 40%, 20%); text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
+.path-line { stroke: hsl(28, 40%, 52%); stroke-width: 5; fill: none; stroke-linecap: round; opacity: .8; }
+
+.status-bar-container { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); width: 90%; display: flex; justify-content: center; gap: 10px; z-index: 60; }
+.status { background: white; color: hsl(25, 40%, 20%); padding: 10px 24px; border-radius: 18px;
+  font-size: 1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); white-space: nowrap; border: 1px solid hsl(35, 35%, 85%); text-align: center; }
+
+/* Modals Overlay Controllers */
+.overlay-modal { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px); z-index: 500; display: none; align-items: center; justify-content: center; }
+.modal-card { background: white; padding: 25px; border-radius: 24px; max-width: 480px; width: 90%; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+.modal-card h2 { font-family: 'Playfair Display', Georgia, serif; color: hsl(25, 40%, 30%); margin-bottom: 12px; text-align: center; }
+.modal-card p { color: hsl(25, 35%, 20%); font-size: 0.95rem; line-height: 1.5; margin-bottom: 14px; }
+.modal-card ul { margin-left: 20px; margin-bottom: 15px; color: hsl(25, 35%, 20%); font-size: 0.9rem; line-height: 1.5; }
+
+.danger-btn { border: 1px solid hsl(0, 34%, 45%); background: transparent; color: hsl(0, 34%, 45%); padding: 10px 20px; border-radius: 14px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: .2s; display: inline-block; margin-top: 15px; }
+.danger-btn:hover { background: hsl(0, 34%, 96%); }
+
+/* End Screen Summary Component */
+.end-screen { position: absolute; inset: 0; background: hsl(35, 35%, 97%); z-index: 600; display: none; }
+.end-emma { position: absolute; left: 40px; bottom: 20px; font-size: 180px; user-select: none; pointer-events: none; }
+.end-box { position: absolute; left: 255px; bottom: 175px; width: 720px; max-width: 57%;
+  background: white; border-radius: 28px; padding: 30px 34px; border: 2px solid hsl(35, 35%, 85%);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.15); }
+.end-box h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.9rem; color: hsl(25, 40%, 30%); margin-bottom: 16px; }
+.end-box p { font-size: 1.1rem; line-height: 1.75; color: hsl(25, 35%, 20%); }
+.score-chip { display: inline-flex; align-items: center; background: hsl(115, 42%, 92%);
+  border: 1px solid rgba(214, 110, 31, 0.25); border-radius: 20px; padding: 6px 16px;
+  font-size: .85rem; font-weight: 700; color: hsl(25, 40%, 35%); margin-top: 14px; }
+.clinical-note { font-size: .8rem; color: hsl(30, 20%, 50%); margin-top: 12px; line-height: 1.6;
+  background: hsl(35, 20%, 98%); border-radius: 10px; padding: 10px 14px; border: 1px dashed hsl(35, 30%, 80%); }
+</style>
+</head>
+<body>
+
+<div class="laptop-screen">
+  <div class="progress-bar"><div class="progress-fill"></div></div>
+  <div class="module-badge">Module 4 of 5 &nbsp;·&nbsp; Executive Function</div>
+
+  <div class="sun"></div>
+  <div class="cloud" style="top:55px;left:100px;">☁️</div>
+  <div class="cloud" style="top:125px;left:540px;">☁️</div>
+  <div class="cloud" style="top:225px;left:1000px;">☁️</div>
+  <div class="hill hill1"></div><div class="hill hill2"></div><div class="hill hill3"></div>
+  <div class="ground"></div>
+  <div class="title">🌿 Emma's Garden Trail 🌿</div>
+
+  <!-- HUD Control Information Bar Layout -->
+  <div class="top-ui">
+    <div style="display:flex; gap:8px; align-items:center; pointer-events:auto;">
+      <button class="util-btn" onclick="togglePause()" title="Pause Game">⏸</button>
+      <button class="util-btn" onclick="showHelp()" title="Help Instructions">ℹ️</button>
+    </div>
+    <div class="info-box"><span class="lbl">Elapsed Time</span><span id="timerDisplay" style="font-weight:700;">⏱ 0s</span></div>
+    <div class="info-box danger-lbl"><span class="lbl">Sifting Mistakes</span><span id="errDisplay" style="font-weight:700; color: hsl(0, 34%, 45%);">Errors: 0</span></div>
+    <div class="info-box"><span class="lbl">Trail Target</span><span id="targetIndicator" style="font-weight:700; color: hsl(28, 40%, 48%);">Demo Practice</span></div>
+  </div>
+
+  <!-- Story Introduction Overlay Panel -->
+  <div class="story-screen" id="storyScreen">
+    <div class="emma">👵🏻🌸</div>
+    <div class="dialog-box">
+      <div class="dialog-step" id="dialogStep">Intro · 1 of 3</div>
+      <div class="dialog-name">Gardener Emma</div>
+      <div class="dialog-text" id="dialogText">Welcome, dear 🌿<br><br>The garden stepping stones became scattered after the rain.</div>
+      <div>
+        <button class="action-btn" id="nextBtn">Continue →</button>
+        <button class="secondary-btn" onclick="skipIntro()">Skip Intro ⏭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Activity Interactive Workspace Grid -->
+  <div class="game-area" id="gameArea">
+    <div class="game-card">
+      <div class="top-bar">
+        <div class="badge">🌸 Trail-Making Test</div>
+        <div class="connect-text" id="connectText">Practice: Connect stones 1 and A</div>
+      </div>
+      <svg id="gameSvg"></svg>
+      <div class="status-bar-container">
+        <div class="status" id="status">Start from node <strong>1</strong> 🌿</div>
+        <button class="action-btn" id="skipPracticeBtn" onclick="exitDemoAndStartRealGame()" style="margin-top: 0; padding: 10px 20px; font-size: 0.9rem; background: hsl(42, 34%, 48%);">Skip Practice ⏭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Modals Systems Layout -->
+  <div class="overlay-modal" id="pauseModal">
+    <div class="modal-card" style="text-align: center;">
+      <h2>Session Paused</h2>
+      <p>Alternating attention trails will freeze until you resume. Rest your vision.</p>
+      <button class="action-btn" onclick="togglePause()" style="margin-top:0;">Resume Pathway</button>
+    </div>
+  </div>
+
+  <div class="overlay-modal" id="helpModal">
+    <div class="modal-card">
+      <h2>Clinical Executive Trial Mapping</h2>
+      <p><strong>What is this game used for?</strong><br>
+      This module evaluates set-shifting and executive sequence processing boundaries by requiring immediate sequential alternation across conceptual data frameworks.</p>
+      
+      <p><strong>What does it prove or track?</strong></p>
+      <ul>
+        <li><strong>Cognitive Flexibility:</strong> Interleaving discrete structural matrices safely identifies cognitive degradation patterns before severe symptoms map.</li>
+      </ul>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid #eee; padding-top: 12px;">
+        <button class="danger-btn" onclick="skipModuleEntirely()">Skip Module entirely ⏩</button>
+        <button class="action-btn" onclick="closeHelp()" style="margin-top:0; padding: 10px 24px;">Return</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Performance Completion Review Panel -->
+  <div class="end-screen" id="endScreen">
+    <div class="end-emma">👵🏻🌸</div>
+    <div class="end-box">
+      <h1 id="endTitle">Garden Trail Complete 🌿</h1>
+      <p id="endMessage"></p>
+      <div class="score-chip" id="scoreChip">Score: 0</div>
+      <div class="clinical-note">
+        🔬 <strong>Clinical Note:</strong> The Trail-Making Test (TMT) measures
+        <em>executive function, cognitive flexibility, and set-shifting</em> — the ability to
+        alternate between two conceptual sequences simultaneously. Time and errors are both
+        clinically meaningful. This is a key early marker in mild cognitive impairment screening.
+      </div>
+      <div style="margin-top:20px;">
+        <button class="action-btn" onclick="proceedNext()">Continue To Module 5 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+window.EmmaScore={
+  save:function(k,d){try{let s=JSON.parse(localStorage.getItem('emmaSession')||'{}');
+    if(!s.scores)s.scores={};if(!s.errors)s.errors={};if(!s.times)s.times={};if(!s.details)s.details={};
+    s.scores[k]=d.score||0;s.errors[k]=d.errors||0;s.times[k]=d.time||0;s.details[k]=d.detail||{};
+    localStorage.setItem('emmaSession',JSON.stringify(s));}catch(e){}}
+};
+
+const dialogs=[
+  {step:'Intro · 1 of 3',text:`Welcome, dear 🌿<br><br>The garden stepping stones became scattered after the rain.`},
+  {step:'Instructions · 2 of 3',text:`Could you help me reconnect the trail in the correct order? 🌸<br><br>Connect the stones from beginning to end by clicking them in order.`},
+  {step:'Pattern · 3 of 3',text:`Alternate between <b>numbers</b> and <b>letters</b> — 1 → A → 2 → B → 3 → C…<br><br>We will begin with a short practice trail first to set our rhythm.`},
+];
+let dialogIdx=0;
+document.getElementById('nextBtn').addEventListener('click',()=>{
+  dialogIdx++;
+  if(dialogIdx<dialogs.length){
+    document.getElementById('dialogText').innerHTML=dialogs[dialogIdx].text;
+    document.getElementById('dialogStep').textContent=dialogs[dialogIdx].step;
+  }else{
+    document.getElementById('storyScreen').style.display='none';
+    document.getElementById('gameArea').style.display='block';
+    startPracticeMode();
+  }
+});
+
+function skipIntro() {
+  document.getElementById('storyScreen').style.display='none';
+  document.getElementById('gameArea').style.display='block';
+  startPracticeMode();
+}
+
+const svg=document.getElementById('gameSvg');
+const patterns=[
+  ['1','A','2','B','3','C','4','D','5','E'],
+  ['1','B','2','C','3','D','4','E','5','F'],
+  ['1','C','2','D','3','E','4','F','5','G'],
+  ['1','D','2','E','3','F','4','G','5','H'],
+  ['1','E','2','F','3','G','4','H','5','I'],
+];
+
+const demoSequence = ['1', 'A'];
+let activeSequence = [];
+let isDemoMode = true;
+
+/* Adjusted Y boundaries from (130->490) to (60->380) so items draw cleanly in the squished viewport */
+const possiblePositions=[
+  {x:180,y:60},{x:360,y:110},{x:560,y:70},{x:780,y:100},{x:980,y:60},{x:1180,y:90},
+  {x:220,y:190},{x:460,y:170},{x:680,y:210},{x:940,y:180},{x:1140,y:200},
+  {x:160,y:330},{x:390,y:350},{x:620,y:340},{x:860,y:320},{x:1060,y:350}
+];
+
+let currentIndex=0,lastPoint=null,errorCount=0,startTime=0;
+let timerInterval, isPaused = false;
+
+function startPracticeMode() {
+  isDemoMode = true;
+  activeSequence = [...demoSequence];
+  document.getElementById('targetIndicator').textContent = "Demo Practice";
+  document.getElementById('connectText').innerHTML=`Practice Trail: ${activeSequence.join(' → ')}`;
+  renderSequenceMap();
+}
+
+function exitDemoAndStartRealGame() {
+  isDemoMode = false;
+  currentIndex = 0;
+  lastPoint = null;
+  errorCount = 0;
+  document.getElementById('errDisplay').textContent = "Errors: 0";
+  document.getElementById('skipPracticeBtn').style.display = "none";
+  document.getElementById('targetIndicator').textContent = "Active Game";
+  
+  const randomPattern = patterns[Math.floor(Math.random()*patterns.length)];
+  activeSequence = [...randomPattern];
+  document.getElementById('connectText').innerHTML=`Connect Trail: ${activeSequence.join(' → ')}`;
+  
+  renderSequenceMap();
+  startTime = Date.now();
+  
+  timerInterval=setInterval(()=>{
+    if(isPaused) return;
+    const secs=Math.round((Date.now()-startTime)/1000);
+    const td=document.getElementById('timerDisplay');
+    td.textContent=`⏱ ${secs}s`;
+    if(secs>60) td.classList.add('urgent');
+  },1000);
+}
+
+function renderSequenceMap() {
+  svg.innerHTML='';
+  const shuffled=[...possiblePositions].sort(()=>Math.random()-.5).slice(0,activeSequence.length);
+  activeSequence.forEach((label,index)=>createNode(shuffled[index].x,shuffled[index].y,label,index));
+  document.getElementById('status').innerHTML=`Start from stepping stone <strong>${activeSequence[0]}</strong> 🌿`;
+}
+
+function createNode(x,y,label,index){
+  const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+  const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',34);c.setAttribute('class','node');
+  const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+  t.setAttribute('x',x);t.setAttribute('y',y+2);t.setAttribute('class','node-text');t.textContent=label;
+  g.appendChild(c);g.appendChild(t);svg.appendChild(g);
+  g.addEventListener('click',()=>handleClick(x,y,index,c));
+}
+
+function handleClick(x,y,index,circle){
+  if(isPaused) return;
+  if(index!==currentIndex){
+    if(!isDemoMode) {
+      errorCount++;
+      document.getElementById('errDisplay').textContent=`Errors: ${errorCount}`;
+    }
+    circle.classList.add('wrong');
+    document.getElementById('status').innerHTML='That step breaks the alternating trail pattern 🍂 — keep looking!';
+    setTimeout(()=>circle.classList.remove('wrong'),500);
+    return;
+  }
+  
+  circle.classList.add('correct');
+  if(lastPoint) drawLine(lastPoint.x,lastPoint.y,x,y);
+  lastPoint={x,y};currentIndex++;
+  
+  if(currentIndex>=activeSequence.length) {
+    if(isDemoMode) {
+      document.getElementById('status').innerHTML='Practice complete! Starting the main module pathway...';
+      setTimeout(exitDemoAndStartRealGame, 1500);
+    } else {
+      finishGame();
+    }
+  } else {
+    document.getElementById('status').innerHTML=`Beautiful 🌸 Next target: <strong>${activeSequence[currentIndex]}</strong>`;
+  }
+}
+
+function drawLine(x1,y1,x2,y2){
+  const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+  l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);
+  l.setAttribute('class','path-line');
+  svg.insertBefore(l,svg.firstChild);
+}
+
+function togglePause() {
+  isPaused = !isPaused;
+  document.getElementById('pauseModal').style.display = isPaused ? 'flex' : 'none';
+}
+
+function showHelp() { isPaused = true; document.getElementById('helpModal').style.display = 'flex'; }
+function closeHelp() { isPaused = false; document.getElementById('helpModal').style.display = 'none'; }
+function skipModuleEntirely() { finishGame(); }
+
+function finishGame(){
+  clearInterval(timerInterval);
+  const elapsed=Math.round((Date.now()-startTime)/1000) || 0;
+  
+  let score=10;
+  score-=Math.min(4,errorCount);
+  if(elapsed>90) score-=3;else if(elapsed>60) score-=2;else if(elapsed>40) score-=1;
+  score=Math.max(0,score);
+
+  EmmaScore.save('game4',{score,errors:errorCount,time:elapsed,
+    detail:{sequenceLength:activeSequence.length,errors:errorCount,timeSeconds:elapsed}});
+
+  document.getElementById('endTitle').textContent=errorCount===0?'Perfect Trail! 🌿':'Trail Complete 🌸';
+  document.getElementById('endMessage').innerHTML=`
+    You beautifully restored Emma's garden pathway 🌸<br><br>
+    Completed in <b>${elapsed} seconds</b> with <b>${errorCount}</b> error${errorCount!==1?'s':''}.
+    Every stepping stone now connects peacefully 🌿
+  `;
+  document.getElementById('scoreChip').textContent=`Executive Function Score: ${score}/10`;
+  document.getElementById('endScreen').style.display='block';
+}
+
+function proceedNext() { window.location.href = 'GAME5.html'; }
+</script>
+</body>
+</html>
